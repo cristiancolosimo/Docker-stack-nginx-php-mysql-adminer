@@ -1,0 +1,35 @@
+version: '3'
+services:
+    web:
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - './nginx.conf:/etc/nginx/conf.d/nginx.conf'   
+            - './app:/app'
+            - './app/cert/nginx-selfsigned.crt:/etc/ssl/certs/nginx-selfsigned.crt'
+            - './app/cert/nginx-selfsigned.key:/etc/ssl/private/nginx-selfsigned.key'
+           # - './app/cert/certificate.pem:/'
+    adminer:
+        image: adminer
+    
+    php:
+        build:
+            context: .
+            dockerfile: PHP.Dockerfile
+        volumes:
+            - ./app:/app
+    mysql:
+        image: mariadb:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root'
+            MYSQL_USER: 'user'
+            MYSQL_PASSWORD: 'user'
+            MYSQL_DATABASE: 'local'
+        volumes:
+            - mysqldata:/var/lib/mysql
+        ports:
+            - 3306:3306
+volumes:
+    mysqldata: {}
